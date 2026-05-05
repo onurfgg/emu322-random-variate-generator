@@ -3,54 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stochastic Random Variate Simulator</title>
-    <!-- Tailwind CSS for styling -->
+    <title>EMÜ322 - Stochastic Random Variate Simulator</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for histograms -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome (İkonlar için) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #f8fafc; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
     </style>
 </head>
-<body class="text-gray-800 p-4 md:p-8">
+<body class="text-slate-800 min-h-screen flex flex-col">
 
-<div class="max-w-6xl mx-auto glass-panel rounded-2xl shadow-xl p-6 md:p-10">
-    <header class="text-center mb-8 border-b pb-6">
-        <h1 class="text-3xl md:text-4xl font-bold text-indigo-700 mb-2">EMÜ322 - Simulation Modeling</h1>
-        <h2 class="text-xl text-gray-600">Assignment #6: Random Variate Generation DSS</h2>
-        <p class="mt-4 text-sm font-semibold text-gray-500 bg-indigo-50 inline-block px-4 py-2 rounded-full">Developed by Onur Furkan Gök & Yusuf Bora Çavdar</p>
-    </header>
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center">
+        <div class="flex space-x-4">
+            <!-- Sosyal Medya İkonları -->
+            <a href="#" class="text-slate-300 hover:text-white transition text-xl"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="text-slate-300 hover:text-white transition text-xl"><i class="fab fa-github"></i></a>
+        </div>
+        <div class="text-right hidden sm:block">
+            <span class="text-xs text-slate-400">Developed by</span><br>
+            <span class="font-semibold text-sm text-indigo-400">Onur Furkan Gök & Yusuf Bora Çavdar</span>
+        </div>
+    </nav>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
-        <!-- Controls Section -->
-        <div class="md:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
-            <h3 class="text-lg font-semibold mb-4 text-gray-700 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                Simülasyon Parametreleri
-            </h3>
+    <!-- Ana İçerik -->
+    <main class="flex-grow container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="mb-8 text-center md:text-left border-b border-slate-200 pb-6">
+            <h1 class="text-3xl font-bold text-slate-900">EMÜ322 Simulation Modeling</h1>
+            <p class="text-slate-500 mt-2 text-lg">Assignment #6: Random Variate Generation DSS</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Soru / Yöntem Seçin:</label>
-                <select id="methodSelect" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-gray-50 p-2.5 border" onchange="toggleInputs()">
-                    <option value="composition">Q1: Composition (Piecewise Exp)</option>
-                    <option value="acceptance">Q2: Acceptance-Rejection (Triangular)</option>
-                    <option value="convolution">Q3: Convolution (Binomial)</option>
-                    <option value="inverse">Q4: Inverse Transform (Uniform)</option>
-                </select>
+            <!-- Sol Panel: Kontroller -->
+            <div class="lg:col-span-1 glass-card rounded-xl p-6 h-fit">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2"><i class="fas fa-sliders-h text-indigo-600 mr-2"></i> Parametreler</h3>
+                
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Soru / Yöntem Seçin:</label>
+                    <select id="methodSelect" class="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50 p-2.5 border" onchange="toggleInputs()">
+                        <option value="1">Q1: Composition Method</option>
+                        <option value="2">Q2: Acceptance-Rejection (Triangular)</option>
+                        <option value="3">Q3: Convolution (Binomial)</option>
+                        <option value="4">Q4: Inverse Transform (Uniform)</option>
+                    </select>
+                </div>
+
+                <div id="q3Inputs" class="mb-5 hidden bg-indigo-50 p-3 rounded-md border border-indigo-100">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Grup ID Rakamları Toplamı (n):</label>
+                    <input type="number" id="nValue" value="15" min="1" class="w-full rounded-md border-slate-300 p-2 border">
+                    <p class="text-xs text-slate-500 mt-2"><i class="fas fa-info-circle"></i> p = 0.60 sabittir.</p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Örneklem Boyutu (N):</label>
+                    <input type="number" value="500" disabled class="w-full rounded-md border-slate-200 bg-slate-100 p-2.5 border text-slate-500 cursor-not-allowed font-mono">
+                </div>
+
+                <button onclick="runSimulation()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-md transition shadow-md flex justify-center items-center">
+                    <i class="fas fa-play mr-2"></i> Simülasyonu Çalıştır
+                </button>
             </div>
 
-            <div id="nInputGroup" class="mb-5 hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Grup ID Rakamları Toplamı (n):</label>
-                <input type="number" id="nValue" value="10" min="1" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-gray-50 p-2.5 border">
-                <p class="text-xs text-gray-500 mt-1">Soru 3 (Binomial) için gereklidir. P = 0.60 sabittir.</p>
+            <!-- Sağ Panel: Sonuçlar ve Grafikler -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- İstatistik Kartları -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="glass-card rounded-xl p-4 border-l-4 border-blue-500">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Teorik Ortalama</p>
+                        <p class="text-xl font-bold text-slate-800 mt-1" id="theoMean">-</p>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 border-l-4 border-indigo-500">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Örneklem Ortalaması</p>
+                        <p class="text-xl font-bold text-slate-800 mt-1" id="sampMean">-</p>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 border-l-4 border-blue-500">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Teorik Varyans</p>
+                        <p class="text-xl font-bold text-slate-800 mt-1" id="theoVar">-</p>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 border-l-4 border-indigo-500">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Örneklem Varyansı</p>
+                        <p class="text-xl font-bold text-slate-800 mt-1" id="sampVar">-</p>
+                    </div>
+                </div>
+                
+                <div id="accRateCard" class="hidden glass-card rounded-xl p-4 border-l-4 border-emerald-500">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Kabul Olasılığı (Teorik / Ampirik)</p>
+                            <p class="text-lg font-bold text-slate-800 mt-1" id="accRateText">-</p>
+                        </div>
+                        <i class="fas fa-check-circle text-3xl text-emerald-100"></i>
+                    </div>
+                </div>
+
+                <!-- Grafik Alanı -->
+                <div class="glass-card rounded-xl p-4 h-[400px] flex flex-col">
+                    <h3 class="text-sm font-bold text-slate-700 mb-2" id="chartTitle">Dağılım Grafiği (Histogram vs PDF/PMF)</h3>
+                    <div class="relative flex-grow w-full h-full">
+                        <canvas id="simChart"></canvas>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Örneklem Boyutu (N):</label>
-                <input type="number" value="500" disabled class="w-full border-gray-200 rounded-lg shadow-sm bg-gray-100 p-2.5 border text-gray-500 cursor-not-allowed">
-            </div>
+        </div>
+    </main>
 
-            <button onclick="runSimulation()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round"Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
+    <!-- Footer Geri Dönüş -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-sm mt-auto">
+        <p>EMÜ322 - Assignment #6 | Developed by Onur Furkan Gök & Yusuf Bora Çavdar &copy; 2026</p>
+    </footer>
+
+    <script>
+        let simChart = null;
+
+        function toggleInputs() {
+            const method = document.getElementById('methodSelect').value;
+            document.getElementById('q3Inputs').classList.toggle('hidden', method !== '3');
+            document.getElementById('accRateCard').classList.toggle('hidden', method !== '2');
+        }
+
+        // --- Yardımcı Matematik Fonksiyonları ---
+        const calcMean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+        const calcVar = (arr, mean) => arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
+        const factorial = n => n <= 1 ? 1 : n * factorial(n - 1);
+        const comb = (n, k) => factorial(n) / (factorial(k) * factorial(n - k));
+
+        function createBins(data, min, max, numBins) {
+            const binWidth = (max - min) / numBins;
+            const bins = Array(numBins).fill(0);
+            data.forEach(val => {
+                if (val >= min && val <= max) {
+                    let idx = Math.floor((val - min) / binWidth);
+                    if (idx === numBins) idx--;
+                    bins[idx]++;
+                }
+            });
+            // Density = count / (N * binWidth)
+            return bins.map(count => count / (data.length * binWidth));
+        }
+
+        // --- Ana Simülasyon Fonksiyonu ---
+        function runSimulation() {
+            const method = document.getElementById('methodSelect').value;
+            const N = 500;
+            let data = [];
+            let theoMean, theoVar, sampMean, sampVar;
+            let labels = [], theoretical = [], empirical = [];
+            let chartType = 'bar';
+            let empiricalLabel = 'Histogram (Yoğunluk)';
+
+            // Q1: Composition Method
+            if (method === '1') {
+                for (let i = 0; i < N; i++) {
+                    let u1 = Math.random();
+                    let u2 = Math.random();
+                    if (u1 < 1/6) {
+                        data.push(Math.log(u2) / 4); // X < 0 kısmı: -Exp(4)
+                    } else {
+                        data.push(-Math.log(u2) / 4); // X > 0 kısmı: Exp(4)
+                    }
+                }
+                theoMean = 1/6; // 0.1667
+                theoVar = 7/72; // 0.0972
+                
+                // Grafik Verisi
+                const min = -1.5, max = 2, numBins = 30;
+                empirical = createBins(data, min, max, numBins);
+                const binWidth = (max - min) / numBins;
+                
+                for (let i = 0; i < numBins; i++) {
+                    let x = min + i * binWidth + binWidth/2;
+                    labels.push(x.toFixed(2));
+                    if (x < 0) theoretical.push((4/6) * Math.exp(4*x));
+                    else theoretical.push((10/3) * Math.exp(-4*x));
+                }
+            }
+            
+            // Q2: Acceptance-Rejection
+            else if (method === '2') {
+                const a = 20, c = 60, b = 80;
+                let totalAttempts = 0;
+                let accepted = 0;
+                const M = 2; // f(x) max = 1/30, g(x) = 1/60. M = (1/30)/(1/60) = 2
+                
+                while (accepted < N) {
+                    totalAttempts++;
+                    let x = 20 + Math.random() * 60; // g(x) ~ U(20, 80)
+                    let u = Math.random();
+                    
+                    let fx = 0;
+                    if (x >= 20 && x <= 60) fx = (x - 20) / 1200;
+                    else if (x > 60 && x <= 80) fx = (80 - x) / 600;
+                    
+                    if (u <= fx * 30) { // fx / (M * g(x)) = fx / (2 * 1/60) = fx * 30
+                        data.push(x);
+                        accepted++;
+                    }
+                }
+                theoMean = (a + b + c) / 3; // 53.33
+                theoVar = (a*a + b*b + c*c - a*b - a*c - b*c) / 18; // 155.55
+                
+                const accProbTheo = 1 / M; // 0.5
+                const accProbEmp = N / totalAttempts;
+                document.getElementById('accRateText').innerText = `${accProbTheo.toFixed(3)} / ${accProbEmp.toFixed(3)}`;
+
+                // Grafik Verisi
+                const min = 20, max = 80, numBins = 20;
+                empirical = createBins(data, min, max, numBins);
+                const binWidth = (max - min) / numBins;
+                
+                for (let i = 0; i < numBins; i++) {
+                    let x = min + i * binWidth + binWidth/2;
+                    labels.push(x.toFixed(1));
+                    if (x >= 20 && x <= 60) theoretical.push((x - 20) / 1200);
+                    else if (x > 60 && x <= 80) theoretical.push((80 - x) / 600);
+                    else theoretical.push(0);
+                }
+            }
+            
+            // Q3: Convolution (Binomial)
+            else if (method === '3') {
+                const n = parseInt(document.getElementById('nValue').value) || 15;
+                const p = 0.60;
+                
+                for (let i = 0; i < N; i++) {
+                    let sum = 0;
+                    for (let j = 0; j < n; j++) {
+                        if (Math.random() < p) sum++;
+                    }
+                    data.push(sum);
+                }
+                theoMean = n * p;
+                theoVar = n * p * (1 - p);
+
+                // Binomial PMF
+                let counts = Array(n + 1).fill(0);
+                data.forEach(val => counts[val]++);
+                empirical = counts.map(c => c / N);
+                empiricalLabel = 'Ampirik Olasılık (PMF)';
+
+                for (let k = 0; k <= n; k++) {
+                    labels.push(k);
+                    let prob = comb(n, k) * Math.pow(p, k) * Math.pow(1-p, n-k);
+                    theoretical.push(prob);
+                }
+            }
+            
+            // Q4: Inverse Transform
+            else if (method === '4') {
+                for (let i = 0; i < N; i++) {
+                    let u = Math.random();
+                    data.push(124 + 8 * u); // F(x) = (x-124)/8 = u => x = 124 + 8u
+                }
+                theoMean = (124 + 132) / 2; // 128
+                theoVar = Math.pow(132 - 124, 2) / 12; // 5.333
+
+                // Grafik Verisi
+                const min = 122, max = 134, numBins = 14;
+                empirical = createBins(data, min, max, numBins);
+                const binWidth = (max - min) / numBins;
+
+                for (let i = 0; i < numBins; i++) {
+                    let x = min + i * binWidth + binWidth/2;
+                    labels.push(x.toFixed(1));
+                    if (x >= 124 && x <= 132) theoretical.push(1/8);
+                    else theoretical.push(0);
+                }
+            }
+
+            // Hesaplamalar
+            sampMean = calcMean(data);
+            sampVar = calcVar(data, sampMean);
+
+            // UI Güncelleme
+            document.getElementById('theoMean').innerText = theoMean.toFixed(4);
+            document.getElementById('sampMean').innerText = sampMean.toFixed(4);
+            document.getElementById('theoVar').innerText = theoVar.toFixed(4);
+            document.getElementById('sampVar').innerText = sampVar.toFixed(4);
+
+            drawChart(labels, empirical, theoretical, empiricalLabel);
+        }
+
+        // --- Grafik Çizimi ---
+        function drawChart(labels, empirical, theoretical, empLabel) {
+            const ctx = document.getElementById('simChart').getContext('2d');
+            
+            if (simChart) {
+                simChart.destroy();
+            }
+
+            simChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: empLabel,
+                            data: empirical,
+                            backgroundColor: 'rgba(99, 102, 241, 0.6)', // Indigo
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 1,
+                            barPercentage: 1.0,
+                            categoryPercentage: 1.0
+                        },
+                        {
+                            label: 'Teorik f(x) / PMF',
+                            data: theoretical,
+                            type: 'line',
+                            borderColor: 'rgba(244, 63, 94, 1)', // Rose
+                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Sayfa yüklendiğinde ilk metodu çalıştır
+        window.onload = () => {
+            toggleInputs();
+            runSimulation();
+        };
+    </script>
+</body>
+</html>
